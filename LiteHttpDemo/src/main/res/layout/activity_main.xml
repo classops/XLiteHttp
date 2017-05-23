@@ -1,23 +1,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     style="?android:attr/buttonBarStyle"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <Button 
-        android:id="@+id/btn_main_test"
-        android:text="测试"
+        android:id="@+id/btn_main_get"
+        android:text="GET"
         style="?android:attr/buttonBarButtonStyle"
-        android:layout_weight="1"
+        android:layout_marginTop="12dp"
         android:layout_height="48dp"
-        android:layout_width="0dp"/>
+        android:layout_width="match_parent"/>
+
+    <Button
+        android:id="@+id/btn_main_post"
+        android:text="POST"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_marginTop="12dp"
+        android:layout_height="48dp"
+        android:layout_width="match_parent"/>
+
+    <Button
+        android:id="@+id/btn_main_upload_file"
+        android:text="POST上传文件"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_marginTop="12dp"
+        android:layout_height="48dp"
+        android:layout_width="match_parent"/>
     
     <Button 
         android:id="@+id/btn_main_stop"
-        android:text="测试"
+        android:text="取消请求"
         style="?android:attr/buttonBarButtonStyle"
-        android:layout_weight="1"
+        android:layout_marginTop="12dp"
         android:layout_height="48dp"
-        android:layout_width="0dp"/>
+        android:layout_width="match_parent"/>
 
 </LinearLayout>

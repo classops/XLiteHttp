@@ -68,8 +68,6 @@ public abstract class Request<T> implements Comparable<Request<?>> {
     // 处理请求体
     protected RequestBody mRequestBody;
 
-    private boolean mShouldCache;
-
     private int mCacheMode;
 
     /**
@@ -88,9 +86,9 @@ public abstract class Request<T> implements Comparable<Request<?>> {
      */
     private RetryPolicy mRetryPolicy;
 
-    protected Thread mRequestThread;
+    private Thread mRequestThread;
 
-    protected Integer mSequence;
+    private Integer mSequence;
 
     /** 与之关联的请求队列 */
     private RequestQueue mRequestQueue;
@@ -324,6 +322,8 @@ public abstract class Request<T> implements Comparable<Request<?>> {
 
         Builder url(String url);
 
+        Builder url(@NonNull HttpUrl httpUrl);
+
         Builder queryParameter(String name, String value);
 
         Builder listener(RequestListener<V> listener);
@@ -361,15 +361,22 @@ public abstract class Request<T> implements Comparable<Request<?>> {
         }
 
         @Override
-        public LiteBuilder<V> url(String url) {
+        public LiteBuilder<V> url(@NonNull HttpUrl httpUrl) {
+            urlBuilder = httpUrl.newBuilder();
+            return this;
+        }
 
+        @Override
+        public LiteBuilder<V> url(String url) {
             HttpUrl temp = HttpUrl.parse(url);
 
 //            if (temp == null) {
-//                throw new InvalidUrlError();
+//                throw new InvalidUrlError("invalid url.");
 //            }
 
-            urlBuilder = temp.newBuilder();
+            if (temp != null)
+                urlBuilder = temp.newBuilder();
+
             return this;
         }
 
@@ -460,6 +467,12 @@ public abstract class Request<T> implements Comparable<Request<?>> {
 //            }
 
             urlBuilder = temp.newBuilder();
+            return this;
+        }
+
+        @Override
+        public FormBuilder<V> url(@NonNull HttpUrl httpUrl) {
+            urlBuilder = httpUrl.newBuilder();
             return this;
         }
 
@@ -565,6 +578,12 @@ public abstract class Request<T> implements Comparable<Request<?>> {
         }
 
         @Override
+        public MultipartFormBuilder<V> url(@NonNull HttpUrl httpUrl) {
+            urlBuilder = httpUrl.newBuilder();
+            return this;
+        }
+
+        @Override
         public MultipartFormBuilder<V> queryParameter(String name, String value) {
             urlBuilder.addQueryParameter(name, value);
             return this;
@@ -618,6 +637,8 @@ public abstract class Request<T> implements Comparable<Request<?>> {
             this.cache = cache;
             return this;
         }
+
+
 
         public MultipartFormBuilder<V> part(String name, String value) {
             bodyBuilder.addFormDataPart(name, value);
