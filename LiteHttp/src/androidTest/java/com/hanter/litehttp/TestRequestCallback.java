@@ -36,7 +36,7 @@ public class TestRequestCallback {
                 .url(httpUrl.toString())
                 .queryParameter("phone", "明硕")
                 .queryParameter("password", "123456")
-                .cache(true)
+                .cache(Request.CacheMode.STANDARD_CACHE)
                 .parser(new StringParser())
                 .retry(new DefaultRetryPolicy(10000, 3, 1))
                 .listener(new RequestListener<String>() {

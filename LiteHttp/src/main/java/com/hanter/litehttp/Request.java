@@ -318,23 +318,31 @@ public abstract class Request<T> implements Comparable<Request<?>> {
     }
 
     public interface Builder<V> {
-        Builder method(int method);
+        Builder<V> method(int method);
 
-        Builder url(String url);
+        Builder<V> url(String url);
 
-        Builder url(@NonNull HttpUrl httpUrl);
+        Builder<V> url(@NonNull HttpUrl httpUrl);
 
-        Builder queryParameter(String name, String value);
+        Builder<V> header(String headerName, String headerValue);
 
-        Builder listener(RequestListener<V> listener);
+        Builder<V> headers(String headerName, List<String> headerValues);
 
-        Builder retry(RetryPolicy retryPolicy);
+        Builder<V> queryParameter(String name, String value);
 
-        Builder cache(int cache);
+        Builder<V> form(String name, String value);
 
-        Builder header(String headerName, String headerValue);
+        Builder<V> part(String name, String value);
 
-        Builder headers(String headerName, List<String> headerValues);
+        Builder<V> part(String name, String mediaType, File file);
+
+        Builder<V> parser(ResponseParser<V> parser);
+
+        Builder<V> listener(RequestListener<V> listener);
+
+        Builder<V> retry(RetryPolicy retryPolicy);
+
+        Builder<V> cache(int cache);
 
         Request<?> create();
     }
@@ -387,11 +395,27 @@ public abstract class Request<T> implements Comparable<Request<?>> {
         }
 
         @Override
+        public Builder<V> form(String name, String value) {
+            return this;
+        }
+
+        @Override
+        public Builder<V> part(String name, String value) {
+            return this;
+        }
+
+        @Override
+        public Builder<V> part(String name, String mediaType, File file) {
+            return this;
+        }
+
+        @Override
         public LiteBuilder<V> listener(RequestListener<V> listener) {
             this.listener = listener;
             return this;
         }
 
+        @Override
         public LiteBuilder<V> parser(ResponseParser<V> parser) {
             this.parser = parser;
             return this;
@@ -458,65 +482,75 @@ public abstract class Request<T> implements Comparable<Request<?>> {
         }
 
         @Override
-        public FormBuilder<V> url(String url) {
-
+        public Builder<V> url(String url) {
             HttpUrl temp = HttpUrl.parse(url);
 
-//            if (temp == null) {
-//                throw new InvalidUrlError();
-//            }
+            if (temp != null)
+                urlBuilder = temp.newBuilder();
 
-            urlBuilder = temp.newBuilder();
             return this;
         }
 
         @Override
-        public FormBuilder<V> url(@NonNull HttpUrl httpUrl) {
+        public Builder<V> url(@NonNull HttpUrl httpUrl) {
             urlBuilder = httpUrl.newBuilder();
             return this;
         }
 
         @Override
-        public FormBuilder<V> queryParameter(String name, String value) {
+        public Builder<V> queryParameter(String name, String value) {
             urlBuilder.addQueryParameter(name, value);
             return this;
         }
 
         @Override
-        public FormBuilder<V> listener(RequestListener<V> listener) {
+        public Builder<V> listener(RequestListener<V> listener) {
             this.listener = listener;
             return this;
         }
 
         @Override
-        public FormBuilder<V> method(int method) {
+        public Builder<V> method(int method) {
             this.method = method;
             return this;
         }
 
-        public FormBuilder<V> form(String name, String value) {
+        @Override
+        public Builder<V> form(String name, String value) {
             bodyBuilder.add(name, value);
             return this;
         }
 
-        public FormBuilder<V> parser(ResponseParser<V> parser) {
+        @Override
+        public Builder<V> part(String name, String value) { // ignore
+            return this;
+        }
+
+        @Override
+        public Builder<V> part(String name, String mediaType, File file) { // ignore
+            return this;
+        }
+
+        @Override
+        public Builder<V> parser(ResponseParser<V> parser) {
             this.parser = parser;
             return this;
         }
 
-        public FormBuilder<V> retry(RetryPolicy retryPolicy) {
+        @Override
+        public Builder<V> retry(RetryPolicy retryPolicy) {
             this.retryPolicy = retryPolicy;
             return this;
         }
 
         @Override
-        public FormBuilder<V> cache(int cache) {
+        public Builder<V> cache(int cache) {
             this.cache = cache;
             return this;
         }
 
         @Override
-        public FormBuilder<V> header(String headerName, String headerValue) {
+        public Builder<V> header(String headerName, String headerValue) {
 
             List<String> headerValues = headers.get(headerName);
 
@@ -531,7 +565,7 @@ public abstract class Request<T> implements Comparable<Request<?>> {
         }
 
         @Override
-        public FormBuilder<V> headers(String headerName, List<String> headerValues) {
+        public Builder<V> headers(String headerName, List<String> headerValues) {
             headers.put(headerName, headerValues);
             return this;
         }
@@ -565,49 +599,50 @@ public abstract class Request<T> implements Comparable<Request<?>> {
         }
 
         @Override
-        public MultipartFormBuilder<V> url(String url) {
-
+        public Builder<V> url(String url) {
             HttpUrl temp = HttpUrl.parse(url);
-
-//            if (temp == null) {
-//                throw new InvalidUrlError();
-//            }
-
-            urlBuilder = temp.newBuilder();
+            if (temp != null)
+                urlBuilder = temp.newBuilder();
             return this;
         }
 
         @Override
-        public MultipartFormBuilder<V> url(@NonNull HttpUrl httpUrl) {
+        public Builder<V> url(@NonNull HttpUrl httpUrl) {
             urlBuilder = httpUrl.newBuilder();
             return this;
         }
 
         @Override
-        public MultipartFormBuilder<V> queryParameter(String name, String value) {
+        public Builder<V> queryParameter(String name, String value) {
             urlBuilder.addQueryParameter(name, value);
             return this;
         }
 
         @Override
-        public MultipartFormBuilder<V> listener(RequestListener<V> listener) {
+        public Builder<V> form(String name, String value) {
+            return this;
+        }
+
+        @Override
+        public Builder<V> listener(RequestListener<V> listener) {
             this.listener = listener;
             return this;
         }
 
         @Override
-        public MultipartFormBuilder<V> method(int method) {
+        public Builder<V> method(int method) {
             this.method = method;
             return this;
         }
 
-        public MultipartFormBuilder<V> parser(ResponseParser<V> parser) {
+        @Override
+        public Builder<V> parser(ResponseParser<V> parser) {
             this.parser = parser;
             return this;
         }
 
         @Override
-        public MultipartFormBuilder<V> header(String headerName, String headerValue) {
+        public Builder<V> header(String headerName, String headerValue) {
 
             List<String> headerValues = headers.get(headerName);
 
@@ -622,30 +657,30 @@ public abstract class Request<T> implements Comparable<Request<?>> {
         }
 
         @Override
-        public MultipartFormBuilder<V> headers(String headerName, List<String> headerValues) {
+        public Builder<V> headers(String headerName, List<String> headerValues) {
             headers.put(headerName, headerValues);
             return this;
         }
 
-        public MultipartFormBuilder<V> retry(RetryPolicy retryPolicy) {
+        public Builder<V> retry(RetryPolicy retryPolicy) {
             this.retryPolicy = retryPolicy;
             return this;
         }
 
         @Override
-        public MultipartFormBuilder<V> cache(int cache) {
+        public Builder<V> cache(int cache) {
             this.cache = cache;
             return this;
         }
 
-
-
-        public MultipartFormBuilder<V> part(String name, String value) {
+        @Override
+        public Builder<V> part(String name, String value) {
             bodyBuilder.addFormDataPart(name, value);
             return this;
         }
 
-        public MultipartFormBuilder<V> part(String name, String mediaType, File file) {
+        @Override
+        public Builder<V> part(String name, String mediaType, File file) {
             bodyBuilder.addFormDataPart(name, file.getName(), RequestBody.create(MediaType.parse(mediaType), file));
             return this;
         }

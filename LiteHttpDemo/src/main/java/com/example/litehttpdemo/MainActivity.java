@@ -22,7 +22,7 @@ import com.hanter.litehttp.utils.HttpsUtils;
 
 import java.io.File;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnClickListener {
 	
 	RequestQueue mRequestQueue;
 
@@ -44,47 +44,17 @@ public class MainActivity extends Activity {
         mRequestQueue = new RequestQueue(this, new HurlStack(null, HttpsUtils.createSSLSocketFactory(this, R.raw.baidu, "wms123")));
         mRequestQueue.start();
 
-
         Button btnPost = (Button) findViewById(R.id.btn_main_post);
         Button btnPostFile = (Button) findViewById(R.id.btn_main_upload_file);
 
         Button btnGet = (Button) findViewById(R.id.btn_main_get);
         Button btnStop = (Button) findViewById(R.id.btn_main_stop);
 		
-		btnGet.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-                newRequest();
-			}
-
-		});
-
-        btnPost.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                newPostRequest();
-            }
-        });
-
-        btnPostFile.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                newPostFileRequest();
-            }
-        });
-		
-		btnStop.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mRequestQueue.cancelTag(MainActivity.this);
-			}
-		});
-		
-	}
+		btnGet.setOnClickListener(this);
+        btnPost.setOnClickListener(this);
+        btnPostFile.setOnClickListener(this);
+        btnStop.setOnClickListener(this);
+    }
 
 	@Override
 	protected void onDestroy() {
@@ -98,10 +68,6 @@ public class MainActivity extends Activity {
         request = new Request.FormBuilder<String>()
                 .method(Method.POST)
                 .url(httpUrl.toString())
-//							.form("pageIndex", "1")
-//							.form("sign", "1")
-//							.form("phone", "15057140903")
-//							.form("password", "123456")
                 .queryParameter("phone", "明硕")
                 .queryParameter("password", "123456")
                 .cache(Request.CacheMode.STANDARD_CACHE)
@@ -146,7 +112,54 @@ public class MainActivity extends Activity {
 	}
 
 	private void newPostRequest() {
+        HttpUrl httpUrl = HttpUrl.parse("http://api.jinqiangxinxi.cn/app/loadFile.do");
+        request = new Request.FormBuilder<String>()
+                .method(Method.POST)
+                .url(httpUrl)
+                .form("mytoken", "ae6bc7d91f1444a683b8d582e9248bb21495432924774")
+                .form("moduleCode", "9")
+                .cache(Request.CacheMode.STANDARD_CACHE)
+                .parser(new StringParser())
+                .retry(new DefaultRetryPolicy(10000, 3, 1))
+                .listener(new RequestListener<String>() {
+                    @Override
+                    public void onAddQueue() {
+                        Log.d("MainActivity", "onStart");
+                    }
 
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(MainActivity.this, "响应：" + response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("MainActivity", "响应：" + response);
+                    }
+
+                    @Override
+                    public void onError(LiteHttpError error) {
+
+                        if (error != null && error.getMessage() != null) {
+//							Toast.makeText(MainActivity.this, "错误：" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.d("MainActivity", "错误：" + error.getMessage());
+                        } else {
+//							Toast.makeText(MainActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
+                            Log.d("MainActivity", "未知错误");
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d("MainActivity", "onCancel");
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        Log.d("MainActivity", "onFinish");
+                    }
+                }).create();
+
+        request.setTag(MainActivity.this);
+        mRequestQueue.add(request);
     }
 
     private void newPostFileRequest() {
@@ -220,5 +233,27 @@ public class MainActivity extends Activity {
 //		request.addHeader("Cache-Control", "no-cache");
         request.setTag(MainActivity.this);
         mRequestQueue.add(request);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.btn_main_get:
+                newRequest();
+                break;
+
+            case R.id.btn_main_post:
+                newPostRequest();
+                break;
+
+            case R.id.btn_main_upload_file:
+                newPostFileRequest();
+                break;
+
+            case R.id.btn_main_stop:
+                mRequestQueue.cancelTag(MainActivity.this);
+                break;
+        }
     }
 }

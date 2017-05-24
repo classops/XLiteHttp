@@ -9,6 +9,7 @@
         android:text="GET"
         style="?android:attr/buttonBarButtonStyle"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:layout_height="48dp"
         android:layout_width="match_parent"/>
 
@@ -17,6 +18,7 @@
         android:text="POST"
         style="?android:attr/buttonBarButtonStyle"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:layout_height="48dp"
         android:layout_width="match_parent"/>
 
@@ -25,6 +27,7 @@
         android:text="POST上传文件"
         style="?android:attr/buttonBarButtonStyle"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:layout_height="48dp"
         android:layout_width="match_parent"/>
     
@@ -33,6 +36,7 @@
         android:text="取消请求"
         style="?android:attr/buttonBarButtonStyle"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:layout_height="48dp"
         android:layout_width="match_parent"/>
 
