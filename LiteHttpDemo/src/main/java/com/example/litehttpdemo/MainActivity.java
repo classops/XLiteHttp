@@ -20,6 +20,8 @@ import com.hanter.litehttp.parser.StringParser;
 import com.hanter.litehttp.stack.HurlStack;
 import com.hanter.litehttp.utils.HttpsUtils;
 
+import org.json.JSONObject;
+
 import java.io.File;
 
 public class MainActivity extends Activity implements OnClickListener {
@@ -54,6 +56,9 @@ public class MainActivity extends Activity implements OnClickListener {
         btnPost.setOnClickListener(this);
         btnPostFile.setOnClickListener(this);
         btnStop.setOnClickListener(this);
+
+
+        Utils.getApiUserAgent(this);
     }
 
 	@Override
@@ -107,6 +112,8 @@ public class MainActivity extends Activity implements OnClickListener {
                     }
                 }).create();
 
+        request.addHeader("appExtraInfo", Utils.getApiExtraInfo(this));
+        request.addHeader(HttpConstants.HEADER_AUTH, HttpConstants.AUTH_TYPE_BEARER + " " + "token");
         request.setTag(MainActivity.this);
         mRequestQueue.add(request);
 	}
@@ -118,6 +125,8 @@ public class MainActivity extends Activity implements OnClickListener {
                 .url(httpUrl)
                 .form("mytoken", "ae6bc7d91f1444a683b8d582e9248bb21495432924774")
                 .form("moduleCode", "9")
+                .form("test", "9")
+                .form("test", "92")
                 .cache(Request.CacheMode.STANDARD_CACHE)
                 .parser(new StringParser())
                 .retry(new DefaultRetryPolicy(10000, 3, 1))
@@ -158,6 +167,8 @@ public class MainActivity extends Activity implements OnClickListener {
                     }
                 }).create();
 
+        request.addHeader("appExtraInfo", Utils.getApiExtraInfo(this));
+        request.addHeader(HttpConstants.HEADER_AUTH, HttpConstants.AUTH_TYPE_BEARER + " " + "token");
         request.setTag(MainActivity.this);
         mRequestQueue.add(request);
     }
@@ -231,6 +242,9 @@ public class MainActivity extends Activity implements OnClickListener {
                 }).create();
 
 //		request.addHeader("Cache-Control", "no-cache");
+
+        request.addHeader("User-Agent", "");
+
         request.setTag(MainActivity.this);
         mRequestQueue.add(request);
     }
@@ -256,4 +270,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 break;
         }
     }
+
+
+
 }
