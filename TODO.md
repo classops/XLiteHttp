@@ -21,3 +21,6 @@ CurrentRequests - 当前所有，包含所有，方便管理 请求。
 
 - [x] 16.FINISH方法是否调用
 intermediate 和 finish
+
+- [x] 参数数组，请求里Okhttp采用两个List<String>来表达键值对，所以数组也不影响
+- [x] Header数组也支持
